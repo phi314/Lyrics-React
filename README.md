@@ -1,3 +1,3 @@
 ## Learn More
 
-Search Lyrics from music match
+Search Lyrics from musixmatch
