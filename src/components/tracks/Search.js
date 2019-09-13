@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Consumer } from '../../context';
+import Spinner from '../layouts/Spinner';
 
 class Search extends Component {
     state = {
-        trackTitle: ''
+        trackTitle: '',
+        isLoading: false
     };
 
     onChange = e => {
@@ -14,7 +16,9 @@ class Search extends Component {
     findTrack = (dispatch, e) => {
         e.preventDefault();
 
-        // Todo: Add spinner
+        this.setState({
+            isLoading: true
+        });
 
         axios
             .get(
@@ -23,10 +27,14 @@ class Search extends Component {
             .then(res => {
                 dispatch({
                     type: 'SEARCH_TRACKS',
-                    payload: res.data.message.body.track_list
+                    track_list: res.data.message.body.track_list,
+                    query: this.state.trackTitle
                 });
 
-                this.setState({ trackTitle: '' });
+                this.setState({
+                    trackTitle: '',
+                    isLoading: false
+                });
             })
             .catch(err => console.log(err));
     };
@@ -37,28 +45,29 @@ class Search extends Component {
                 {value => {
                     const { dispatch } = value;
                     return (
-                        <div className="card card-body m-4 p-4">
-                            <h1 className="display-4 text-center">
-                                <i className="fa fa-music"></i> Search for a song
+                        <div className='card card-body m-4 p-4'>
+                            <h1 className='display-4 text-center'>
+                                <i className='fa fa-music'></i> Search for a song
                             </h1>
-                            <p className="Lead text-center">Get the lyrics for any song</p>
+                            <p className='Lead text-center'>Get the lyrics for any song</p>
                             <form onSubmit={this.findTrack.bind(this, dispatch)}>
-                                <div className="form-group">
+                                <div className='form-group'>
                                     <input
-                                        type="text"
-                                        className="form-control form-control-lg"
-                                        placeholder="Song Title..."
-                                        name="trackTitle"
+                                        type='text'
+                                        className='form-control form-control-lg'
+                                        placeholder='Song Title...'
+                                        name='trackTitle'
                                         value={this.state.trackTitle}
                                         onChange={this.onChange}
                                     />
                                 </div>
                                 <button
-                                    className="btn btn-primary btn-lg btn-block mb-5"
-                                    type="submit"
+                                    className='btn btn-primary btn-lg btn-block mb-5'
+                                    type='submit'
                                 >
                                     Get track lyrics
                                 </button>
+                                {this.state.isLoading && <Spinner />}
                             </form>
                         </div>
                     );
